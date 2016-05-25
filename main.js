@@ -212,12 +212,10 @@ var tempCounter = 0;
 				if(g.sprites["spaceship"].velocity.x < -0.00001)
 				{
 					g.sprites["spaceship"].texture = g.sprites["spaceship"].texture02;
-					//console.log("left");
 				}
 				else if(g.sprites["spaceship"].velocity.x > 0.00001)
 				{
 					g.sprites["spaceship"].texture = g.sprites["spaceship"].texture03;
-					//console.log("right");
 				}
 				else
 				{
@@ -297,7 +295,7 @@ var tempCounter = 0;
 				g.sprites["spaceship"].setStartVel();
 				g.sprites["spaceship"].setStartPoint();	
 				g.oArrays.texts["score"].text = g.points;	
-				g.oArrays.audios["score"].audio.play();
+				g.oArrays.audios["slurp"].audio.play();
 			}
 
 			g.sprites["roller"].die = function()
@@ -319,7 +317,6 @@ var tempCounter = 0;
 			//USER CONTROL STUFF
 			g.sprites["bg1"].mousedown = g.sprites["bg1"].touchstart = function(mouseData)
 			{
-			   //console.log("MOUSE DOWN!");
 			   g.gameState = g.s.GAME_STATES.START_GAME;
 			}
 			
@@ -698,7 +695,6 @@ var tempCounter = 0;
 			//Set start points for certain sprites
 			g.sprites["level250"].setStartPoint();
 			g.sprites["spaceship"].setStartPoint();
-			console.log(g.sprites["spaceship"].position);
 			g.sprites["arrowUp"].setStartPoint();
 			g.sprites["arrowDown"].setStartPoint();
 			g.sprites["arrowLeft"].setStartPoint();
@@ -871,11 +867,8 @@ var tempCounter = 0;
 							var temp = Math.floor(Math.random() * ttAudioManager.seq.parts[i].data.length);
 
 							//Trigger new sound and make note that it's playing
-							console.log(ttAudioManager.seq.parts[i].data[temp].handle);
 							g.oArrays.audios[ttAudioManager.seq.parts[i].data[temp].handle].audio.play(function(soundId){
 								ttAudioManager.seq.parts[i].soundsPlaying.push(soundId);
-								console.log(ttAudioManager.seq.parts[i].soundsPlaying);
-
 							}).partId = i;
 						}
 
@@ -956,14 +949,12 @@ var tempCounter = 0;
 
 		ttHighScoreManager.loadTop10 = function()
 	    {
-	    			//console.log(g.s.urls.top10ajax);
 					var ajax = $.getJSON(g.s.urls.top10ajax + "?get_top_10=true", function(data) {
 					});
 	                ajax.fail(function(data){
 	                    console.log("Ajax fail.");
 	                }) ;
 	                ajax.done(function(data){
-						//console.log(data);
 				    	for(var i in data)
 				    	{
 				    		ttHighScoreManager.highScoreTexts[i] = { "points": data[i][1] , "nick": data[i][0] }
@@ -1523,10 +1514,6 @@ var tempCounter = 0;
 
 				this.position.x  	= this.position.x;
 				this.position.y  	= test.y - Math.floor(this.height / 2);
-				console.log(this.position.y);
-				console.log(Math.floor(this.height / 2));
-				console.log(test.y);
-				console.log("");
 
 				this.velocity 		= new Vector(this.velocity.x, -1 * this.bounce * this.velocity.y);					
 				if(this.bounce == 0)
