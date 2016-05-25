@@ -1,0 +1,1 @@
+abc:8|bcd:7|cde:6|def:5|TT:5|efg:4|ABC:4|tuo:4|ggg:3|MEL:3

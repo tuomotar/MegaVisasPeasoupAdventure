@@ -1,0 +1,1066 @@
+{ 	"GAME_STATES": 
+	{
+		"LOADING": "loading",
+		"SETTINGS_JSON_LOADED": "settings_json_loaded",
+		"LOADING_SPRITES": "loading_sprites",
+		"ALL_LOADED": "allLoaded",
+		"START_START_SCREEN": "startStartScreen",
+		"START_SCREEN": "startScreen",
+		"START_GAME": "startGame",
+		"GAME_ON": "gameOn",
+		"START_GAME_OVER": "startGameOver",
+		"GAME_OVER": "gameOver",		
+		"GAME_PAUSED": "gamePaused",
+		"SCALING": "scaling"		
+	},
+	"designDim" :  
+	{ 
+		"w": 1080, 
+		"h": 1920
+	},
+	"urls" : 
+	{ 
+		"assets": "http://localhost:8888/rocket/game_assets/",
+		"top10ajax": "http://localhost:8888/rocket/top10.php" 
+	},
+	"audios":
+	{	
+		"score":
+		{
+			"handle": "score",
+			"path": "game_assets/sounds/score.mp3",
+			"data":
+			{
+				"volume": 0.2,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false
+			}
+		},
+		"engine":
+		{
+			"handle": "engine",
+			"path": "game_assets/sounds/engine2.mp3",
+			"data":
+			{
+				"volume": 0.0,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false
+			}
+		},			
+		"gameStart":
+		{
+			"handle": "gameStart",
+			"path": "game_assets/sounds/gameStart.mp3",
+			"data":
+			{
+				"volume": 0.1,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false
+			}
+		},	
+		"gameOver":
+		{
+			"handle": "gameOver",
+			"path": "game_assets/sounds/gameOver.mp3",
+			"data":
+			{
+				"volume": 0.1,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false
+			}
+		},
+		"gPomp":
+		{
+			"handle": "gPomp",
+			"path": "game_assets/sounds/gPomp.mp3",
+			"data":
+			{
+				"volume": 0.3,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false
+			}
+		},
+		"inst1":
+		{
+			"handle": "inst1",
+			"path": "game_assets/sounds/inst1.mp3",
+			"data":
+			{
+				"volume": 0.02,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst2":
+		{
+			"handle": "inst2",
+			"path": "game_assets/sounds/inst2.mp3",
+			"data":
+			{
+				"volume": 0.02,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst3":
+		{
+			"handle": "inst3",
+			"path": "game_assets/sounds/inst3.mp3",
+			"data":
+			{
+				"volume": 0.02,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst4":
+		{
+			"handle": "inst4",
+			"path": "game_assets/sounds/inst4.mp3",
+			"data":
+			{
+				"volume": 0.04,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst5":
+		{
+			"handle": "inst5",
+			"path": "game_assets/sounds/inst5.mp3",
+			"data":
+			{
+				"volume": 0.04,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst6":
+		{
+			"handle": "inst6",
+			"path": "game_assets/sounds/inst6.mp3",
+			"data":
+			{
+				"volume": 0.04,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst7":
+		{
+			"handle": "inst7",
+			"path": "game_assets/sounds/inst7.mp3",
+			"data":
+			{
+				"volume": 0.04,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst8":
+		{
+			"handle": "inst8",
+			"path": "game_assets/sounds/inst8.mp3",
+			"data":
+			{
+				"volume": 0.04,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		},
+		"inst9":
+		{
+			"handle": "inst9",
+			"path": "game_assets/sounds/inst9.mp3",
+			"data":
+			{
+				"volume": 0.04,
+				"loop": false,
+				"format": "mp3",
+				"buffer": false,
+				"lengthMS": 0
+			}
+		}
+	},
+	"seq":
+	{
+		"part1":
+		{
+			"playing": true,
+			"triggerNewSoundsIntervalMS": 10000,
+			"soundsPlaying": 0,
+			"soundsPlayingLimit": 4,
+			"counter": 0,
+			"data":
+			[
+				{ 
+					"handle": "inst1",
+					"probability": 25,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst2",
+					"probability": 25,
+					"playing": false,
+					"counter": 0
+				},				
+				{ 
+					"handle": "inst3",
+					"probability": 25,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst2",
+					"probability": 25,
+					"playing": false,
+					"counter": 0
+				}	
+			]
+		},
+		"part2":
+		{
+			"playing": false,
+			"triggerNewSoundsIntervalMS": 5000,
+			"soundsPlaying": 0,
+			"soundsPlayingLimit": 6,
+			"counter": 0,
+			"data":
+			[
+				{ 
+					"handle": "inst1",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst2",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},				
+				{ 
+					"handle": "inst3",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst4",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst5",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst6",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst7",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst8",
+					"probability": 11,
+					"playing": false,
+					"counter": 0
+				},
+				{ 
+					"handle": "inst9",
+					"probability": 12,
+					"playing": false,
+					"counter": 0
+				}								
+			]
+		}		
+	},
+	"texts":
+	{
+		"score": 
+		{
+			"name": "score",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 960,
+				"yPixMax": 960
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "144",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 10,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_1": 
+		{
+			"name": "top10_1",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1400,
+				"yPixMax": 1400
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_2": 
+		{
+			"name": "top10_2",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1440,
+				"yPixMax": 1440
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_3": 
+		{
+			"name": "top10_3",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1480,
+				"yPixMax": 1480
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_4": 
+		{
+			"name": "top10_4",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1520,
+				"yPixMax": 1520
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_5": 
+		{
+			"name": "top10_5",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1560,
+				"yPixMax": 1560
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_6": 
+		{
+			"name": "top10_6",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1600,
+				"yPixMax": 1600
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_7": 
+		{
+			"name": "top10_7",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1640,
+				"yPixMax": 1640
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_8": 
+		{
+			"name": "top10_8",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1680,
+				"yPixMax": 1680
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_9": 
+		{
+			"name": "top10_9",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1720,
+				"yPixMax": 1720
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		},		
+		"top10_10": 
+		{
+			"name": "top10_10",
+			"visible": false,
+			"opacity": 1,
+			"stageEnter": 
+			{
+				"text": "0",
+				"random": false,
+				"xPixMin": 540,
+				"xPixMax": 540,
+				"yPixMin": 1760,
+				"yPixMax": 1760
+			},
+			"font":
+			{
+				"name": "Arial",
+				"sizePx": "35",
+				"dropShadow": true,
+				"dropShadowDistance": 5,
+				"dropShadowColor": "0x000000",
+				"strokeColor": "0xffffff",
+				"strokeThickness": 1,
+				"fillColor": "0xffffff",
+				"align": "center"
+			}
+		}
+	},
+	"assets_bitmap_spritesheet":
+	{
+		"mainSpriteSheet": 
+		{ 
+			"filename_image": "gamesprites.png",
+			"filename_json": "gamesprites.json",
+			"sprites": {
+				"bg1" :
+				{
+					"spriteName": "bg1", 
+					"fileName": "peli_tausta_1.jpg",
+					"properties": 
+					{
+						"interactive": true
+					}
+				}
+				,
+				"bg2" :
+				{
+					"spriteName": "bg2", 
+					"fileName": "peli_tausta_2.jpg"					
+				}
+				,
+				"level250" :
+				{
+					"spriteName": "level250", 
+					"fileName": "peli_taso_250.jpg",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"hitsCount": 
+						{
+							"bySpaceship": 0
+						},				
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": true,
+								"xPixMin": 400,
+								"xPixMax": 680,			
+								"yPixMin": 700,
+								"yPixMax": 900
+							},
+							"kinematicMotion":
+							{
+								"direction": "horizontal",
+								"randomVelocity": false,
+								"velXMin": 1,
+								"velXMax": 10,
+								"velYMin": 1,
+								"velYMax": 3,
+								"locXMin": 125,
+								"locXMax": 950,
+								"locYMin": 0,
+								"locYMax": 0
+							}
+						}	
+					}							
+				},				
+				"arrowUp" :
+				{
+					"spriteName": "arrowUp", 
+					"fileName": "vn_1.jpg",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"hitsCount": {} ,				
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": false,
+								"xPixMin": 540,
+								"xPixMax": 540,			
+								"yPixMin": 1550,
+								"yPixMax": 1550
+							}
+						}	
+					}					
+				},
+				"arrowRight" :
+				{
+					"spriteName": "arrowRight", 
+					"fileName": "vn_2.jpg",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"hitsCount": {} ,				
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": false,
+								"xPixMin": 700,
+								"xPixMax": 700,			
+								"yPixMin": 1650,
+								"yPixMax": 1650
+							}
+						}	
+					}				
+				},
+				"arrowDown" :
+				{
+					"spriteName": "arrowDown", 
+					"fileName": "vn_3.jpg",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"hitsCount": {} ,				
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": false,
+								"xPixMin": 540,
+								"xPixMax": 540,			
+								"yPixMin": 1750,
+								"yPixMax": 1750
+							}
+						}	
+					}					
+				},
+				"arrowLeft" :
+				{
+					"spriteName": "arrowLeft", 
+					"fileName": "vn_4.jpg",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"hitsCount": {} ,				
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": false,
+								"xPixMin": 380,
+								"xPixMax": 380,			
+								"yPixMin": 1650,
+								"yPixMax": 1650
+							}
+						}	
+					}			
+				}
+				,				
+				"spaceship" : 
+				{
+					"spriteName": "spaceship", 
+					"fileName": "visa1.png",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  true,
+						"gravityFactor": 1,
+						"bounce": 0.5,
+						"hitsCount": 
+						{
+							"boundsBottom": 0
+						},				
+						"userControl": 
+						{
+							"interactive": false,
+							"userControlOn": true,
+							"keys": 
+							{ 
+								"keyLeftDown": { "accBurst": -2}, 
+								"keyRightDown": { "accBurst": 2}, 
+								"keyDownDown": { "setVel": 0 }, 
+								"keyUpDown": { "accBurst": 0.0001 }, 
+								"keySpaceDown": { "setVelAcc": 0 }
+							}
+						},
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": true,
+								"xPixMin": 50,
+								"xPixMax": 1000,			
+								"yPixMin": 1400,
+								"yPixMax": 1400
+							},
+							"velocity":
+							{
+								"random": false,
+								"xPixMin": 0,
+								"xPixMax": 0,			
+								"yPixMin": 0,
+								"yPixMax": 0					
+							}
+						}
+					}
+				}
+				,				
+				"spaceship_left" : 
+				{
+					"spriteName": "spaceship1", 
+					"fileName": "visa2.png",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  true,
+						"gravityFactor": 1,
+						"bounce": 0.5,
+						"visible": false,
+						"hitsCount": 
+						{
+							"boundsBottom": 0
+						},				
+						"userControl": 
+						{
+							"interactive": false,
+							"userControlOn": true,
+							"keys": 
+							{ 
+								"keyLeftDown": { "accBurst": -2}, 
+								"keyRightDown": { "accBurst": 2}, 
+								"keyDownDown": { "setVel": 0 }, 
+								"keyUpDown": { "accBurst": 0.0001 }, 
+								"keySpaceDown": { "setVelAcc": 0 }
+							}
+						},
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": true,
+								"xPixMin": 50,
+								"xPixMax": 1000,			
+								"yPixMin": 1399,
+								"yPixMax": 1399
+							},
+							"velocity":
+							{
+								"random": false,
+								"xPixMin": 0,
+								"xPixMax": 0,			
+								"yPixMin": 0,
+								"yPixMax": 0					
+							}
+						}
+					}
+				}
+				,				
+				"spaceship_right" : 
+				{
+					"spriteName": "spaceship2", 
+					"fileName": "visa3.png",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  true,
+						"gravityFactor": 1,
+						"bounce": 0.5,
+						"visible": false,
+						"hitsCount": 
+						{
+							"boundsBottom": 0
+						},				
+						"userControl": 
+						{
+							"interactive": false,
+							"userControlOn": true,
+							"keys": 
+							{ 
+								"keyLeftDown": { "accBurst": -2}, 
+								"keyRightDown": { "accBurst": 2}, 
+								"keyDownDown": { "setVel": 0 }, 
+								"keyUpDown": { "accBurst": 0.0001 }, 
+								"keySpaceDown": { "setVelAcc": 0 }
+							}
+						},
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": true,
+								"xPixMin": 50,
+								"xPixMax": 1000,			
+								"yPixMin": 1399,
+								"yPixMax": 1399
+							},
+							"velocity":
+							{
+								"random": false,
+								"xPixMin": 0,
+								"xPixMax": 0,			
+								"yPixMin": 0,
+								"yPixMax": 0					
+							}
+						}
+					}
+				}	
+				,				
+				"sound_off" : 
+				{
+					"spriteName": "sound_off", 
+					"fileName": "sound_off.png",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"bounce": 0.5,
+						"visible": true,
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": true,
+								"xPixMin": 1030,
+								"xPixMax": 1030,			
+								"yPixMin": 50,
+								"yPixMax": 50
+							}
+						}
+					}
+				}
+				,				
+				"sound_on" : 
+				{
+					"spriteName": "sound_on", 
+					"fileName": "sound_on.png",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"bounce": 0.5,
+						"visible": false,
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": true,
+								"xPixMin": 1030,
+								"xPixMax": 1030,			
+								"yPixMin": 50,
+								"yPixMax": 50
+							}
+						}
+					}
+				}		
+				,				
+				"hernekeitto" : 
+				{
+					"spriteName": "hernekeitto", 
+					"fileName": "hernekeitto.png",
+					"properties":
+					{
+						"collisionsWith": {},
+						"affectedByGravity":  false,
+						"gravityFactor": 1,
+						"bounce": 0.5,
+						"visible": false,
+						"stageEnter":
+						{
+							"anchor": { "x": 0.5, "y": 0.5 },
+							"position": 
+							{
+								"random": true,
+								"xPixMin": 1030,
+								"xPixMax": 1030,			
+								"yPixMin": 50,
+								"yPixMax": 50
+							}
+						}
+					}
+				}																
+			}
+		}
+	},
+	"assets_pixi_animated_spritesheet":
+	{
+		"roller": 
+		{ 
+			"spriteName": "roller", 
+			"filename_image": "g.jpg",
+			"filename_json": "g.json",
+			"properties":
+			{
+				"collisionsWith": {},
+				"affectedByGravity":  true,
+				"gravityFactor": 1,
+				"hitsCount": {} ,	
+				"bounce": 0,
+				"stageEnter":
+				{
+					"anchor": { "x": 0.5, "y": 0.5 },
+					"position": 
+					{
+						"random": true,
+						"xPixMin": 400,
+						"xPixMax": 700,			
+						"yPixMin": 100,
+						"yPixMax": 100
+					},
+					"velocity":
+					{
+						"random": false,
+						"xPixMin": 0.1,
+						"xPixMax": 0.1,			
+						"yPixMin": 0.1,
+						"yPixMax": 0.1					
+					}
+				}	
+			}			
+		}
+	},
+	"wait":
+	{
+		"gameOver": 1000
+	},
+	"physics":
+	{
+		"gravityOrig" : 0.00001,
+		"limitVelocityX": 1,
+		"limitVelocityY": 1,
+		"limitAccelerationYMax" : 0.001,
+		"limitAccelerationYMin" : -0.001,
+		"limitAccelerationXMin" : -0.001,
+		"limitAccelerationXMax" : 0.001,
+		"deltaTMin" : 8,
+		"deltaTMax" : 16
+	},
+	"nonGameArea":
+	{
+		"w": 1080,
+		"h": 558,
+		"x": 0,
+		"y": 1362
+	},
+	"virtualKeyboardContainerLeftTopCorner":
+	{
+		"x": 440,
+		"y": 1500
+	}
+}
