@@ -1,5 +1,6 @@
 /* USES pixi.js and howler.js */
-var tabOn = true;
+var tabOn 		= true;
+
 function onBlur() {
 	tabOn = false;
 };
@@ -49,8 +50,9 @@ var tempCounter = 0;
 		 	"texts": [],
 		 	"collisions": [],
 		 	"physics": [],
-		 	"audio": []
-		 }
+		 	"audios": []
+		 },
+		 "soundOn": true
 	};
 
 	//Hide main renderer
@@ -74,8 +76,6 @@ var tempCounter = 0;
         	g.s 		= json;
         	g.gameState = g.s.GAME_STATES.SETTINGS_JSON_LOADED;
 
-        	//CREATE TEXTS (BASED ON JSON)
-        	ttTextManager.createTextObjectsFromJson();
         	g.stage.helperCanvas.width 	= g.s.designDim.w;
         	g.stage.helperCanvas.height = g.s.designDim.h;
 
@@ -91,15 +91,17 @@ var tempCounter = 0;
         	function (e) 
         	{ 
 
-	        	//CREATE SOUND OBJECTS (BASED ON JSON)
-	        	//CREATE SOUND SEQUENCERS (BASED ON JSON)
+	        	//CREATE SOUND OBJECTS
+	        	g.oArrays.audios = ttAudioManager.loadAudios(g.s.audios);
+
+	        	//CREATE SOUND SEQUENCERS
+	        	ttAudioManager.createAudioSequencer(g.s.seq);
+
 	        	//PUT STUFF ON STAGE
 	        	ttAssetManager.setSpritesOnStage();
 
 	        	//THIS SHOULD BE DONE AFTER EVERYTHING IS ON STAGE!!!!
 	        	ttScalingManager.scaleRenderer();
-	        	//$("#" + g.stage.mainRendererId).css("display", "block");
-
 
 	        	//RUN
 	        	ttMain.initMainLoopAndRun();
@@ -116,11 +118,11 @@ var tempCounter = 0;
 		ttScalingManager.scaleRenderer();
 
 		//Keep background gradient updated
-		$("body").css("background", "#ffffff");
-		$("body").css("background", "-moz-linear-gradient(top,  #173e57,  #000000) !important");
-		$("body").css("background", "-webkit-gradient(linear, left top, left bottom, from(#173e57), to(#000000))");
-		$("body").css("filter", "progid:DXImageTransform.Microsoft.gradient(startColorstr='#173e57', endColorstr='#000000'");
-		$("body").css("background", "-o-linear-gradient(rgb(207,221,172),rgb(255,255,255))");
+		//$("body").css("background", "#ffffff");
+		$("body").css("background", "-moz-linear-gradient(top,  #FCFBE3,  #000000)");
+		$("body").css("background", "-webkit-gradient(linear, left top, left bottom, from(#FCFBE3), to(#000000))");
+		$("body").css("filter", "progid:DXImageTransform.Microsoft.gradient(startColorstr='#FCFBE3', endColorstr='#000000'");
+		$("body").css("background", "-o-linear-gradient(rgb(252,251,227),rgb(255,255,255))");
 	});
 
 
@@ -135,8 +137,11 @@ var tempCounter = 0;
 				$("#loaderData").html(Math.round(e.progress));
 			}			
 			assetLoader.on('progress', onProgressCallback).load(function (loader, resources) {
+
 		        $("#loaderData").html(Math.round(loader.progress));
 		        $(".loaderContainer").css("display", "none");
+
+		        //Load spritesheet
 				for(var i in g.s.assets_bitmap_spritesheet)	  
 				{      
 					for (var j in g.s.assets_bitmap_spritesheet[i].sprites)
@@ -147,7 +152,8 @@ var tempCounter = 0;
 					}		
 				}
 
-			$.getJSON(g.s.urls.assets + g.s.assets_bitmap_spritesheet.mainSpriteSheet.filename_json, function(json_spritesheet) {
+				//Set frame metadata for each bitmap in spritesheet
+				$.getJSON(g.s.urls.assets + g.s.assets_bitmap_spritesheet.mainSpriteSheet.filename_json, function(json_spritesheet) {
 				for(var q in json_spritesheet.frames)
 				{
 					for(var i in g.s.assets_bitmap_spritesheet)	  
@@ -162,13 +168,13 @@ var tempCounter = 0;
 					}
 				}
 				
-				//Roller
+				//Roller (PIXI movieclip, has to be loaded separately)
 				var frames 	= ["g1.png", "g2.png", "g3.png", "g4.png", "g5.png", "g6.png", "g7.png", "g8.png", "g9.png", "g10.png", "g11.png", "g12.png", "g13.png", "g14.png", "g15.png", "g16.png", "g17.png", "g18.png", "g19.png", "g20.png", "g21.png", "g22.png", "g23.png", "g24.png", "g25.png", "g26.png", "g27.png", "g28.png", "g29.png", "g30.png", "g31.png", "g32.png", "g33.png", "g34.png", "g35.png", "g36.png"];
-				//var tmpSprite 	= 
 				g.sprites[g.s.assets_pixi_animated_spritesheet.roller.spriteName] 		= PIXI.extras.MovieClip.fromFrames(frames);
 				g.sprites[g.s.assets_pixi_animated_spritesheet.roller.spriteName].name 		= g.s.assets_pixi_animated_spritesheet.roller.spriteName;				
 				setSpriteMetadata(g.sprites[g.s.assets_pixi_animated_spritesheet.roller.spriteName], g.s.assets_pixi_animated_spritesheet.roller);					
 						
+
 				document.dispatchEvent(new CustomEvent( "allSpritesCreated", { detail: { "temp": "temp" }, bubbles: true, cancelable: true }));
 			});	        
 		});
@@ -176,17 +182,69 @@ var tempCounter = 0;
 
 		ttAssetManager.setSpritesOnStage = function()
 		{
+			//THIS HAS TO BE DONE BEFORE THE FIRST SCALING!!!! (everything in design dimensions first!)
+
 			//Add sprites to renderer container
 			for(var w in g.sprites)
 			{
 				g.stage.rendererContainer.addChild(g.sprites[w]);					
 			}
 
-			//Cache spaceship as bitmap
-			g.sprites["spaceship"].cacheAsBitmap = true;
-			
-			//Start position
-			g.sprites["spaceship"].setStartPoint = g.sprites["level250"].setStartPoint = g.sprites["roller"].setStartPoint = g.sprites["arrowUp"].setStartPoint = g.sprites["arrowDown"].setStartPoint = g.sprites["arrowLeft"].setStartPoint = g.sprites["arrowRight"].setStartPoint  = function()
+			//Create texts and add them to renderer container
+			ttTextManager.createTextObjectsFromJson();
+		
+			for(var w in g.oArrays.texts)
+			{
+				g.stage.rendererContainer.addChild(g.oArrays.texts[w]);					
+			}	
+
+	        //Load highscores
+	        ttHighScoreManager.loadTop10();
+
+
+			//Create textures for different spaceship appearances (spaceship looks like Visa)
+			g.sprites["spaceship"].texture01 	= PIXI.Texture.fromFrame('visa1.png');		
+			g.sprites["spaceship"].texture02  	= PIXI.Texture.fromFrame('visa3.png');
+			g.sprites["spaceship"].texture03  	= PIXI.Texture.fromFrame('visa2.png');
+
+			g.sprites["spaceship"].checkVisualAsset = function()
+			{
+				if(g.sprites["spaceship"].velocity.x < -0.00001)
+				{
+					g.sprites["spaceship"].texture = g.sprites["spaceship"].texture02;
+					//console.log("left");
+				}
+				else if(g.sprites["spaceship"].velocity.x > 0.00001)
+				{
+					g.sprites["spaceship"].texture = g.sprites["spaceship"].texture03;
+					//console.log("right");
+				}
+				else
+				{
+					g.sprites["spaceship"].texture = g.sprites["spaceship"].texture01;
+				}
+			}
+
+			//Sound on / off click
+			g.sprites["sound_on"].interactive = true;
+			g.sprites["sound_off"].interactive = true;
+
+			keyN.press = function(data) {	
+				//g.soundOn = true;
+				g.sprites["sound_on"].visible 	= false;
+				g.sprites["sound_off"].visible 	= true;
+				Howler.unmute();
+			}	
+
+			keyM.press = function(data) {	
+				//g.soundOn = false;
+				g.sprites["sound_on"].visible 	= true;
+				g.sprites["sound_off"].visible 	= false;
+				Howler.mute();
+			}	
+
+			//Start positions
+			g.sprites["spaceship"].setStartPoint = g.sprites["level250"].setStartPoint = g.sprites["roller"].setStartPoint = g.sprites["arrowUp"].setStartPoint = g.sprites["arrowDown"].setStartPoint = g.sprites["arrowLeft"].setStartPoint = g.sprites["arrowRight"].setStartPoint = g.sprites["sound_off"].setStartPoint  = g.sprites["sound_on"].setStartPoint  = function()
 			{
 				if(this.stageEnter.position.random == true)
 				{
@@ -237,11 +295,15 @@ var tempCounter = 0;
 				g.points++;
 				g.sprites["roller"].die();				
 				g.sprites["spaceship"].setStartVel();
-				g.sprites["spaceship"].setStartPoint();				
+				g.sprites["spaceship"].setStartPoint();	
+				g.oArrays.texts["score"].text = g.points;	
+				g.oArrays.audios["score"].audio.play();
 			}
 
 			g.sprites["roller"].die = function()
 			{
+				g.sprites["roller"].platformHitPlayed 	= false;
+				g.sprites["roller"].onSurface			= false;
 				g.sprites["roller"].affectedByGravity 	= false;				
 				g.sprites["roller"].position.x 			= g.s.designDim.w / 2;
 				g.sprites["roller"].position.y 			= 100;
@@ -251,11 +313,10 @@ var tempCounter = 0;
 				setTimeout(function () 
 				{ 
 					g.sprites["roller"].affectedByGravity = true;	
-				}, Math.random() * 7 + 1 + 3 * 1000);
+				}, (Math.floor(Math.random() * 50)) + 10 * (1 / (g.points + 1)) * 1000);
 			}
 
 			//USER CONTROL STUFF
-			 
 			g.sprites["bg1"].mousedown = g.sprites["bg1"].touchstart = function(mouseData)
 			{
 			   //console.log("MOUSE DOWN!");
@@ -265,16 +326,19 @@ var tempCounter = 0;
 			if(g.sprites["spaceship"].userControl.userControlOn == true)
 			{
 				keyUp.press = keyW.press = function(data) {	
-					//if(this.onSurface) { this.onSurface = false; }
+
 					keysDown["up"] = true;
+					g.sprites["arrowUp"].alpha = 0.5;
+
 					//TEMPORARY VELOCITY IMPULSE FORWARD (calculate components!!!!)
 					g.sprites["spaceship"].temporaryAccelerationImpulseY = -1 * g.sprites["spaceship"].userControl.keys.keyUpDown.accBurst;
-					g.sprites["arrowUp"].alpha = 0.5;
+					g.oArrays.audios["engine"].audio.fadeIn(0.7, 50);
 				}
 
 				keyUp.release = keyW.release = function(data) {	
 					keysDown["up"] = false;
 					g.sprites["arrowUp"].alpha = 1;
+					g.oArrays.audios["engine"].audio.fadeOut(0.0, 50);
 				}
 
 				keyDown.press = keyS.press = function(data) {	
@@ -282,7 +346,7 @@ var tempCounter = 0;
 					if(!this.onSurface)
 					{
 						g.sprites["spaceship"].resetVelocityX();
-						g.sprites["spaceship"].velocity = new Vector(g.sprites["spaceship"].velocity.x, g.sprites["spaceship"].velocity.y * 0.8);
+						g.sprites["spaceship"].velocity = new Vector(g.sprites["spaceship"].velocity.x, g.sprites["spaceship"].velocity.y * 0.6);
 						//g.sprites["spaceship"].resetVelocity();
 						if(this.resetAccelerationX) 
 						{ 
@@ -304,6 +368,10 @@ var tempCounter = 0;
 						keysDown["right"] = true;
 						if(!g.sprites["spaceship"].onSurface) { g.sprites["spaceship"].rotation += Math.PI / 180 * 5; }	
 					}
+					else
+					{
+						g.sprites["spaceship"].velocity.x = g.sprites["spaceship"].velocity.x  + 0.02;
+					}
 					g.sprites["arrowRight"].alpha = 0.5;
 				}		
 
@@ -317,6 +385,10 @@ var tempCounter = 0;
 						if(keysDown["up"] == true) { keyUp.press(); }
 						keysDown["left"] = true;
 						if(!g.sprites["spaceship"].onSurface) { g.sprites["spaceship"].rotation -= Math.PI / 180 * 5;}
+					}
+					else
+					{
+						g.sprites["spaceship"].velocity.x = g.sprites["spaceship"].velocity.x  - 0.02;
 					}
 					g.sprites["arrowLeft"].alpha = 0.5;
 				}		
@@ -410,7 +482,9 @@ var tempCounter = 0;
 						this.position.x = this.position.x + g.time.timeDiffNowMs * theStep * theStepMultiplier;						
 					}
 					this.velocity = new Vector(theStep, 0);
-				}				
+				}		
+				g.sprites["hernekeitto"].position.x = g.sprites["level250"].position.x;	
+				g.sprites["hernekeitto"].position.y = g.sprites["level250"].position.y - g.sprites["hernekeitto"].height / 2 - g.sprites["level250"].height / 2 - 2;			
 			}
 			
 			//Key assets
@@ -426,7 +500,9 @@ var tempCounter = 0;
 			g.sprites["arrowLeft"].mousedown 	= g.sprites["arrowLeft"].touchstart 	= keyLeft.press;
 			g.sprites["arrowLeft"].mouseup 		= g.sprites["arrowLeft"].touchend 		= keyLeft.release;
 			g.sprites["arrowRight"].mousedown 	= g.sprites["arrowRight"].touchstart 	= keyRight.press;
-			g.sprites["arrowRight"].mouseup 	= g.sprites["arrowRight"].touchend 		= keyRight.release;			
+			g.sprites["arrowRight"].mouseup 	= g.sprites["arrowRight"].touchend 		= keyRight.release;	
+			g.sprites["sound_on"].mousedown 	= g.sprites["sound_on"].touchstart 		= keyN.press; 
+			g.sprites["sound_off"].mousedown 	= g.sprites["sound_off"].touchstart 	= keyM.press; 	
 		}
 
 		function setSpriteMetadata(sprite, theMetaData)
@@ -473,9 +549,6 @@ var tempCounter = 0;
 		{
 			//Set the game state
 			g.gameState = g.s.GAME_STATES.START_START_SCREEN;
-
-			//Load high scores
-			//ttHighScoreManager.loadTop10();
 
 			//Run main loop
 			ttMain.runMainLoop();
@@ -532,8 +605,10 @@ var tempCounter = 0;
 
 				//Bottom hit
 				g.sprites["spaceship"].checkBottomHit();
-				g.sprites["roller"].checkBottomHit();
-				
+				if(!g.sprites["roller"].onSurface)
+				{
+					g.sprites["roller"].checkBottomHit();
+				}
 				//Game area border
 				g.sprites["spaceship"].checkGameAreaBorders();
 				g.sprites["roller"].checkGameAreaBorders();		
@@ -549,15 +624,40 @@ var tempCounter = 0;
 
 		ttMain.runStartStartScreen = function()
 		{
-			g.sprites["level250"].visible 		= false;
-			g.sprites["bg1"].visible 			= true;
-			g.sprites["bg2"].visible 			= false;
-			g.sprites["arrowUp"].visible 		= false;
-			g.sprites["arrowRight"].visible 	= false;
-			g.sprites["arrowDown"].visible 		= false;	
-			g.sprites["arrowLeft"].visible 		= false;	
-			g.sprites["spaceship"].visible 		= false;
-			g.sprites["roller"].visible 		= false;				
+			g.oArrays.texts["score"].visible 				= false;
+			g.oArrays.texts["top10_1"].visible 				= true;
+			g.oArrays.texts["top10_2"].visible 				= true;
+			g.oArrays.texts["top10_3"].visible 				= true;
+			g.oArrays.texts["top10_4"].visible 				= true;
+			g.oArrays.texts["top10_5"].visible 				= true;
+			g.oArrays.texts["top10_6"].visible 				= true;
+			g.oArrays.texts["top10_7"].visible 				= true;
+			g.oArrays.texts["top10_8"].visible 				= true;
+			g.oArrays.texts["top10_9"].visible 				= true;
+			g.oArrays.texts["top10_10"].visible 			= true;																								
+			g.sprites["level250"].visible 					= false;
+			g.sprites["bg1"].visible 						= true;
+			g.sprites["bg2"].visible 						= false;
+			g.sprites["arrowUp"].visible 					= false;
+			g.sprites["arrowRight"].visible 				= false;
+			g.sprites["arrowDown"].visible 					= false;	
+			g.sprites["arrowLeft"].visible 					= false;	
+			g.sprites["spaceship"].visible 					= false;
+			g.sprites["roller"].visible 					= false;
+			g.sprites["hernekeitto"].visible 				= false;				
+			g.oArrays.texts["score"].visible 				= false;			
+			g.oArrays.texts["score"].position.x 			= g.s.designDim.w / 10  - g.oArrays.texts["score"].width / 2;
+			g.oArrays.texts["score"].position.y 			= g.s.designDim.h / 22  - g.oArrays.texts["score"].width / 2;	
+			g.oArrays.texts["score"].text 					= 0	
+
+			g.sprites["spaceship"].setStartVel();
+			g.sprites["spaceship"].setStartPoint();
+
+			g.sprites["sound_off"].setStartPoint();					
+			g.sprites["sound_on"].setStartPoint();	
+
+			ttAudioManager.seq.parts["part1"].playing = true;
+			ttAudioManager.seq.parts["part2"].playing = false;
 
 			g.gameState = g.s.GAME_STATES.START_SCREEN;								
 		}
@@ -569,33 +669,50 @@ var tempCounter = 0;
 
 		ttMain.runStartGame = function()
 		{
-			g.sprites["level250"].visible 		= true;
-			g.sprites["bg1"].visible 			= false;
-			g.sprites["bg2"].visible 			= true;
-			g.sprites["arrowUp"].visible 		= true;
-			g.sprites["arrowRight"].visible 	= true;
-			g.sprites["arrowDown"].visible 		= true;	
-			g.sprites["arrowLeft"].visible 		= true;	
-			g.sprites["spaceship"].visible 		= true;	
-			g.sprites["roller"].visible 		= true;			
+			g.sprites["roller"].die();
+			g.oArrays.texts["score"].visible 				= true;
+			g.oArrays.texts["top10_1"].visible 				= false;
+			g.oArrays.texts["top10_2"].visible 				= false;
+			g.oArrays.texts["top10_3"].visible 				= false;
+			g.oArrays.texts["top10_4"].visible 				= false;
+			g.oArrays.texts["top10_5"].visible 				= false;
+			g.oArrays.texts["top10_6"].visible 				= false;
+			g.oArrays.texts["top10_7"].visible 				= false;
+			g.oArrays.texts["top10_8"].visible 				= false;
+			g.oArrays.texts["top10_9"].visible 				= false;
+			g.oArrays.texts["top10_10"].visible 			= false;
+			g.sprites["level250"].visible 					= true;
+			g.sprites["bg1"].visible 						= false;
+			g.sprites["bg2"].visible 						= true;
+			g.sprites["arrowUp"].visible 					= true;
+			g.sprites["arrowRight"].visible 				= true;
+			g.sprites["arrowDown"].visible 					= true;	
+			g.sprites["arrowLeft"].visible 					= true;	
+			g.sprites["spaceship"].visible 					= true;	
+			g.sprites["roller"].visible 					= true;		
+			g.sprites["hernekeitto"].visible 				= true;	
 			g.sprites["roller"].play();
-			g.sprites["spaceship"].setStartVel();
-			g.sprites["roller"].setStartVel();
+			g.sprites["spaceship"].velocity = new Vector(0,0);
+			//g.sprites["roller"].setStartVel();
 
 			//Set start points for certain sprites
 			g.sprites["level250"].setStartPoint();
 			g.sprites["spaceship"].setStartPoint();
+			console.log(g.sprites["spaceship"].position);
 			g.sprites["arrowUp"].setStartPoint();
 			g.sprites["arrowDown"].setStartPoint();
 			g.sprites["arrowLeft"].setStartPoint();
 			g.sprites["arrowRight"].setStartPoint();
-			g.sprites["roller"].setStartPoint();			
+			//g.sprites["roller"].setStartPoint();	
+
+			ttAudioManager.seq.parts["part1"].playing = true;
+			ttAudioManager.seq.parts["part2"].playing = true;			
 
 			//Zero points
 			g.points = 0;
 			
 			//g.sprites["spaceship"].velocity = new Vector(0, 0);
-			
+			g.oArrays.audios["gameStart"].audio.play();
 			g.gameState = g.s.GAME_STATES.GAME_ON;
 		}
 
@@ -610,23 +727,10 @@ var tempCounter = 0;
 
 					//Check collisions and do position and velocity corrections
 					ttMain.doPhysicsPart2();	
+
+					g.sprites["spaceship"].checkVisualAsset();
 				}
 			}			
-		}	
-
-		ttMain.runGamePaused = function()
-		{
-			
-		}
-
-		ttMain.runStartGameOver = function()
-		{
-			
-		}
-
-		ttMain.runGameOver = function()
-		{
-			
 		}										
 		
 		ttMain.runMainLoop = function()
@@ -648,19 +752,11 @@ var tempCounter = 0;
 					if(g.gameState == g.s.GAME_STATES.START_GAME) { ttMain.runStartGame(); }				
 
 					//GAME ON
-					if(g.gameState == g.s.GAME_STATES.GAME_ON) { ttMain.runGameFrame(); }	
-
-					//GAME PAUSED
-					if(g.gameState == g.s.GAME_STATES.GAME_PAUSED) { ttMain.runGamePaused(); }	
-
-					//GAME OVER (1 frame)
-					if(g.gameState == g.s.GAME_STATES.START_GAME_OVER) { ttMain.runStartGameOver(); }
-
-					//GAME OVER SCREEN / HIGH SCORE SCREEN
-					if(g.gameState == g.s.GAME_STATES.GAME_OVER) { ttMain.runGameOver(); }
+					if(g.gameState == g.s.GAME_STATES.GAME_ON) { ttMain.runGameFrame(); }
 
 					//RENDER
 					g.stage.mainRenderer.render(g.stage.rendererContainer);
+					ttAudioManager.runSequencer();					
 				
 					queue();
 				}		
@@ -740,35 +836,228 @@ var tempCounter = 0;
 
 	}( window.ttScalingManager = window.ttScalingManager || {}, jQuery ));
 
+	//AUDIO MANAGER
+	(function( ttAudioManager, $) {
+
+		ttAudioManager.seq = 
+		{
+			parts: []
+		}
+
+		ttAudioManager.createAudioSequencer = function(seqData)
+		{
+			for(var i in seqData)
+			{
+				ttAudioManager.seq.parts[i] 				= seqData[i];
+				ttAudioManager.seq.parts[i].soundsPlaying 	= [];
+			}
+
+		}
+
+		ttAudioManager.runSequencer = function()
+		{
+			for(var i in ttAudioManager.seq.parts)
+			{
+				if(ttAudioManager.seq.parts[i].playing)
+				{
+					if(ttAudioManager.seq.parts[i].counter < ttAudioManager.seq.parts[i].triggerNewSoundsIntervalMS)
+					{
+						ttAudioManager.seq.parts[i].counter = ttAudioManager.seq.parts[i].counter + g.time.timeDiffNowMs;
+					}
+					else
+					{
+						if(ttAudioManager.seq.parts[i].soundsPlaying.length < ttAudioManager.seq.parts[i].soundsPlayingLimit)
+						{
+							var temp = Math.floor(Math.random() * ttAudioManager.seq.parts[i].data.length);
+
+							//Trigger new sound and make note that it's playing
+							console.log(ttAudioManager.seq.parts[i].data[temp].handle);
+							g.oArrays.audios[ttAudioManager.seq.parts[i].data[temp].handle].audio.play(function(soundId){
+								ttAudioManager.seq.parts[i].soundsPlaying.push(soundId);
+								console.log(ttAudioManager.seq.parts[i].soundsPlaying);
+
+							}).partId = i;
+						}
+
+						//Zero counter
+						ttAudioManager.seq.parts[i].counter = 0;
+
+					}
+				}
+			}
+		}
+
+	    ttAudioManager.loadAudios = function(audiosDataArray)
+	    {
+
+	    	ttAudioManager.assocAudiosPlaying 		= [];	
+
+	        var audiosLoaderCounter  	= 0;
+	        var audiosCounter       	= 0;
+	        var loadedAudiosArray 		= new Array();
+	        for(var i in audiosDataArray)
+	        {   
+	            loadedAudiosArray[audiosDataArray[i].handle]             	= new Object();
+	            loadedAudiosArray[audiosDataArray[i].handle].handle 		= audiosDataArray[i].handle;
+				audiosCounter++;
+	            loadedAudiosArray[audiosDataArray[i].handle].audio       	= new Howl({urls: [audiosDataArray[i].path], loop: audiosDataArray[i].data.loop, volume: audiosDataArray[i].data.volume, format: audiosDataArray[i].data.format});
+				loadedAudiosArray[audiosDataArray[i].handle].audio.handle 	= audiosDataArray[i].handle;
+				loadedAudiosArray[audiosDataArray[i].handle].isPlaying 		= false;
+				loadedAudiosArray[audiosDataArray[i].handle].audio.on('play', function()
+				{
+					ttAudioManager.assocAudiosPlaying[this.handle] = true;
+				});
+				
+				loadedAudiosArray[audiosDataArray[i].handle].audio.on('end', function(soundId)
+				{
+					ttAudioManager.assocAudiosPlaying[this.handle] = false;
+
+					if(typeof ttAudioManager.seq.parts[this.partId] != "undefined")
+					{
+						var index = ttAudioManager.seq.parts[this.partId].soundsPlaying.indexOf(soundId);
+						if (index > -1) { ttAudioManager.seq.parts[this.partId].soundsPlaying.splice(index, 1); }
+					}
+				});
+				
+
+				audiosLoaderCounter++;
+	        }
+			return loadedAudiosArray;
+	    }
+
+	}( window.ttAudioManager = window.ttAudioManager || {}, jQuery ));	
+
+
 	//TEXT MANAGER
 	(function(ttTextManager, $) {
 
 		ttTextManager.createText = function(textParams)
 		{
-			return new PIXI.Text(textParams.stageEnter.text, { font : textParams.font.sizePx + 'px ' + textParams.font.name , dropShadow: textParams.font.dropShadow, dropShadowDistance: textParams.font.dropShadowDistance, dropShadowColor: textParams.font.dropShadowColor, stroke: textParams.font.strokeColor, strokeThickness: textParams.font.strokeThickness, fill : textParams.font.fillColor, align : textParams.font.align});
+			return new PIXI.Text(textParams.stageEnter.text, { font : textParams.font.sizePx + 'px ' + textParams.font.name , dropShadow: textParams.font.dropShadow, dropShadowDistance: textParams.font.dropShadowDistance, dropShadowColor: parseInt(textParams.font.dropShadowColor), stroke: parseInt(textParams.font.strokeColor), strokeThickness: textParams.font.strokeThickness, fill : parseInt(textParams.font.fillColor), align : textParams.font.align});
 		}
 
 		ttTextManager.createTextObjectsFromJson = function()
 		{
 			for(var i in g.s.texts)
 			{
-				g.oArrays.texts.push(ttTextManager.createText(g.s.texts[i]));
+				g.oArrays.texts[g.s.texts[i].name] 		= ttTextManager.createText(g.s.texts[i]);
+				g.oArrays.texts[g.s.texts[i].name].x 	= g.s.texts[i].stageEnter.xPixMin;
+				g.oArrays.texts[g.s.texts[i].name].y 	= g.s.texts[i].stageEnter.yPixMin;
 			}
 		}
 
+
 	}( window.ttTextManager = window.ttTextManager || {}, jQuery ));		
 
+	/* HIGH SCORE MANAGER*/
+	(function( ttHighScoreManager, $) {
+
+		ttHighScoreManager.highScoreTexts = [];
+
+		ttHighScoreManager.loadTop10 = function()
+	    {
+	    			//console.log(g.s.urls.top10ajax);
+					var ajax = $.getJSON(g.s.urls.top10ajax + "?get_top_10=true", function(data) {
+					});
+	                ajax.fail(function(data){
+	                    console.log("Ajax fail.");
+	                }) ;
+	                ajax.done(function(data){
+						//console.log(data);
+				    	for(var i in data)
+				    	{
+				    		ttHighScoreManager.highScoreTexts[i] = { "points": data[i][1] , "nick": data[i][0] }
+				    	}		
+				    	ttHighScoreManager.setHighScores();
+	                });		
+
+		}
+
+	    ttHighScoreManager.setHighScores = function()
+	    {
+			g.oArrays.texts["top10_1"].text = ttHighScoreManager.highScoreTexts[0].nick + " " + ttHighScoreManager.highScoreTexts[0].points;   	
+			g.oArrays.texts["top10_2"].text = ttHighScoreManager.highScoreTexts[1].nick + " " + ttHighScoreManager.highScoreTexts[1].points;   	
+			g.oArrays.texts["top10_3"].text = ttHighScoreManager.highScoreTexts[2].nick + " " + ttHighScoreManager.highScoreTexts[2].points;   	
+			g.oArrays.texts["top10_4"].text = ttHighScoreManager.highScoreTexts[3].nick + " " + ttHighScoreManager.highScoreTexts[3].points;   	
+			g.oArrays.texts["top10_5"].text = ttHighScoreManager.highScoreTexts[4].nick + " " + ttHighScoreManager.highScoreTexts[4].points;   	
+			g.oArrays.texts["top10_6"].text = ttHighScoreManager.highScoreTexts[5].nick + " " + ttHighScoreManager.highScoreTexts[5].points;   	
+			g.oArrays.texts["top10_7"].text = ttHighScoreManager.highScoreTexts[6].nick + " " + ttHighScoreManager.highScoreTexts[6].points;   	
+			g.oArrays.texts["top10_8"].text = ttHighScoreManager.highScoreTexts[7].nick + " " + ttHighScoreManager.highScoreTexts[7].points;   	
+			g.oArrays.texts["top10_9"].text = ttHighScoreManager.highScoreTexts[8].nick + " " + ttHighScoreManager.highScoreTexts[8].points;   	
+			g.oArrays.texts["top10_10"].text = ttHighScoreManager.highScoreTexts[9].nick + " " + ttHighScoreManager.highScoreTexts[9].points;   	
+	    	g.oArrays.texts["top10_1"].x = g.s.designDim.w / 2 - g.oArrays.texts["top10_1"].width / 2;
+	    	g.oArrays.texts["top10_2"].x = g.s.designDim.w / 2 - g.oArrays.texts["top10_2"].width / 2;
+	    	g.oArrays.texts["top10_3"].x = g.s.designDim.w / 2  - g.oArrays.texts["top10_3"].width / 2;
+	    	g.oArrays.texts["top10_4"].x = g.s.designDim.w / 2  - g.oArrays.texts["top10_4"].width / 2;
+	    	g.oArrays.texts["top10_5"].x = g.s.designDim.w / 2  - g.oArrays.texts["top10_5"].width / 2;
+	    	g.oArrays.texts["top10_6"].x = g.s.designDim.w / 2  - g.oArrays.texts["top10_6"].width / 2;
+	    	g.oArrays.texts["top10_7"].x = g.s.designDim.w / 2 - g.oArrays.texts["top10_7"].width / 2;
+	    	g.oArrays.texts["top10_8"].x = g.s.designDim.w / 2  - g.oArrays.texts["top10_8"].width / 2;
+	    	g.oArrays.texts["top10_9"].x = g.s.designDim.w / 2  - g.oArrays.texts["top10_9"].width / 2;
+	    	g.oArrays.texts["top10_10"].x = g.s.designDim.w / 2  - g.oArrays.texts["top10_10"].width / 2;
+	    }
+
+		ttHighScoreManager.saveTop10 = function(score)
+	    {
+	    	if(score > ttHighScoreManager.highScoreTexts[9].points)
+	    	{
+				var userDataLength = 5;
+				var nick = "ABC";
+				
+				while(userDataLength > 3 && nick != null)
+				{
+					nick = prompt("Pääsit Top 10 -listalle. Anna nimimerkki jonka pituus on 1 - 3 merkkiä.", nick);
+					if(nick != null)
+					{
+					  userDataLength = nick.length;
+					}
+					else
+					{
+						nick = "ABC";
+						userDataLength = nick.length;
+					}
+					if(userDataLength < 1) { userDataLength = 5; }
+				}
+				if (nick != null) {
+				
+		                var ajax = jQuery.ajax({
+		                    method : 'POST',
+		                    url : g.s.urls.top10ajax,
+		                    data : { 'save_top_10' : score, 'nick' : nick }
+		                });
+		                ajax.fail(function(data){
+		                    console.log("Ajax fail.");
+		                }) ;
+		                ajax.done(function(data){
+		                	var dataJson = eval(data);
+					    	for(var i in dataJson)
+					    	{
+								ttHighScoreManager.highScoreTexts[i] = { "points": dataJson[i][1] , "nick": dataJson[i][0] }
+					    	}		
+					    	ttHighScoreManager.setHighScores();
+		                }) ;	
+				}
+				else
+				{
+					//Do not save
+				}
+			}
+		}
+
+	}( window.ttHighScoreManager = window.ttHighScoreManager || {}, jQuery ));	
 
 	//Keyboard commands
 	var keyLeft 		= keyboard(37);
-	var keyUp 		= keyboard(38);				
+	var keyUp 			= keyboard(38);				
 	var keyRight 		= keyboard(39);	
-	var keyDown		= keyboard(40);	
-	var keyW 		= keyboard(87);
-	var keyA 		= keyboard(65);
-	var keyS 		= keyboard(83);	
-	var keyD 		= keyboard(68);		
-	var keyU		= keyboard(85);		
+	var keyDown			= keyboard(40);	
+	var keyW 			= keyboard(87);
+	var keyA 			= keyboard(65);
+	var keyS 			= keyboard(83);	
+	var keyD 			= keyboard(68);		
+	var keyU			= keyboard(85);		
+	var keyN 			= keyboard(51);
+	var keyM 			= keyboard(52);
 	var keySpace		= keyboard(32);	
 	var keysDown		= [];
 
@@ -784,11 +1073,6 @@ var tempCounter = 0;
 	  key.downHandler = function(event) {
 	    if (event.keyCode === key.code) {
 	    	if(key.press) { key.press(); }
-	    	/*
-	      if (key.isUp && key.press) key.press();
-	      key.isDown = true;
-	      key.isUp = false;
-	      */
 	    }
 	    event.preventDefault();
 	  };
@@ -797,11 +1081,6 @@ var tempCounter = 0;
 	  key.upHandler = function(event) {
 	    if (event.keyCode === key.code) {
 	    	if(key.release) { key.release(); }
-	    	/*
-	      if (key.isDown && key.release) key.release();
-	      key.isDown = false;
-	      key.isUp = true;
-	      */
 	    }
 	    event.preventDefault();
 	  };
@@ -866,28 +1145,36 @@ var tempCounter = 0;
 					var circle 	= {x: g.sprites["roller"].position.x, y: g.sprites["roller"].position.y, r: g.sprites["roller"].width / 4};
 					var rect 	= {x: g.sprites["level250"].position.x - g.sprites["level250"].width / 2 , y: g.sprites["level250"].position.y - g.sprites["level250"].width / 2, w: g.sprites["level250"].width, h: g.sprites["level250"].height};
 					
-					if(rectCircleColliding(circle,rect))
+					if(!g.sprites["roller"].onSurface)
 					{
-						//g.gameState = g.s.GAME_STATES.GAME_PAUSED;
-						if(g.sprites["roller"].position.y <= g.sprites["level250"].position.y - (g.sprites["level250"].height / 2) && g.sprites["roller"].velocity.y > 0) 
+						if(rectCircleColliding(circle,rect))
 						{
-							//From above
-							g.sprites["roller"].checkPlatformHit(g.sprites["level250"]); 						}
-						else
-						{
-							if(!g.sprites["roller"].onSurface)
+							if(g.sprites["roller"].position.y <= g.sprites["level250"].position.y - (g.sprites["level250"].height / 2) && g.sprites["roller"].velocity.y > 0) 
 							{
-								if(g.sprites["roller"].position.x < g.sprites["level250"].position.x && g.sprites["roller"].velocity.x > 0) { if(!top_bottom) { g.sprites["roller"].position.x = g.sprites["level250"].position.x - g.sprites["level250"].width / 2 - g.sprites["roller"].width / 2; } }
-								if(g.sprites["roller"].position.x > g.sprites["level250"].position.x && g.sprites["roller"].velocity.x < 0) { if(!top_bottom) { g.sprites["roller"].position.x = g.sprites["level250"].position.x + g.sprites["level250"].width / 2 + g.sprites["roller"].width / 2; } }
+								//From above						
+								g.sprites["roller"].checkPlatformHit(g.sprites["level250"]); 
 							}
-						}
-					}	
+							else
+							{
+								if(!g.sprites["roller"].onSurface)
+								{
+									if(g.sprites["roller"].position.x < g.sprites["level250"].position.x && g.sprites["roller"].velocity.x > 0) { if(!top_bottom) { g.sprites["roller"].position.x = g.sprites["level250"].position.x - g.sprites["level250"].width / 2 - g.sprites["roller"].width / 2; } }
+									if(g.sprites["roller"].position.x > g.sprites["level250"].position.x && g.sprites["roller"].velocity.x < 0) { if(!top_bottom) { g.sprites["roller"].position.x = g.sprites["level250"].position.x + g.sprites["level250"].width / 2 + g.sprites["roller"].width / 2; } }
+								}
+							}
+						}	
+					}
 
+					//When on platform and over the border, onSurface = false
 					if(g.sprites["roller"].onSurface)
 					{
-						if(g.sprites["roller"].position.x < g.sprites["level250"].position.x - g.sprites["level250"].width / 2 || g.sprites["roller"].position.x > g.sprites["level250"].position.x + g.sprites["level250"].width / 2 )
+						if(g.sprites["roller"].position.y < g.sprites["level250"].position.y)
 						{
-							g.sprites["roller"].onSurface = false;
+							//On platform
+							if(g.sprites["roller"].position.x < g.sprites["level250"].position.x - g.sprites["level250"].width / 2 || g.sprites["roller"].position.x > g.sprites["level250"].position.x + g.sprites["level250"].width / 2 )
+							{
+								g.sprites["roller"].onSurface = false;
+							}
 						}
 						
 					}
@@ -972,7 +1259,9 @@ var tempCounter = 0;
 						{
 							if((this === g.sprites["spaceship"] && otherSprite === g.sprites["roller"]))
 							{
+								ttHighScoreManager.saveTop10(g.points);
 								g.gameState = g.s.GAME_STATES.START_START_SCREEN;
+								g.oArrays.audios["gameOver"].audio.play();
 							}
 						}
 						
@@ -983,22 +1272,24 @@ var tempCounter = 0;
  	PIXI.Sprite.prototype.calculateAcceleration = function () 
 	{
         
+
 		var totalAccelerationX = 0;
 		var totalAccelerationY = 0;
 	     
 		if(this.affectedByGravity == true)
 		{
-			if(!this.onSurface)
+	        if(!this.onSurface)
 			{
 				if(this.gravityFactor)
 				{
-						totalAccelerationY += g.s.physics.gravityOrig * this.gravityFactor;
-					}
-					else
-					{
-						totalAccelerationY += g.s.physics.gravityOrig;
-					}	
-		    }
+					totalAccelerationY += g.s.physics.gravityOrig * this.gravityFactor;
+				}
+				else
+				{
+					totalAccelerationY += g.s.physics.gravityOrig;
+
+				}	
+			}
 		}
 
 		//Acceleration impulse (= force)
@@ -1142,6 +1433,11 @@ var tempCounter = 0;
 								g.sprites["roller"].velocity = new Vector(1 * (Math.abs(g.sprites["roller"].velocity.x) + 0.0001), 0);
 							}	
 						}						
+						if(!g.sprites["roller"].platformHitPlayed) 
+						{
+							g.oArrays.audios["gPomp"].audio.play();
+							g.sprites["roller"].platformHitPlayed = true;
+						}
 
 					}		
 			}
@@ -1190,21 +1486,12 @@ var tempCounter = 0;
 		var test = {};		
 		if(this.bounce == 10000) { this.bounce = 0; }
 		
-		if(platform === g.sprites["level250"])
-		{
-			test.x = platform.getBounds().x;
-			test.y = platform.getBounds().y;
-			test.w = platform.getBounds().width;
-			test.h = platform.getBounds().height;
-		}
-		else
-		{
-			test = g.s.nonGameArea;
-			test.x = g.s.nonGameArea.x;
-			test.y = g.s.nonGameArea.y;
-			test.w = g.s.designDim.w;
-			test.h = g.s.designDim.h - g.s.nonGameArea.h;			
-		}
+
+		test = g.s.nonGameArea;
+		test.x = g.s.nonGameArea.x;
+		test.y = g.s.nonGameArea.y;
+		test.w = g.s.designDim.w;
+		test.h = g.s.designDim.h - g.s.nonGameArea.h;			
 		
 		if(this.position.y + this.getBounds().height / 2 >= test.y)
 		{
@@ -1235,7 +1522,11 @@ var tempCounter = 0;
 			{		
 
 				this.position.x  	= this.position.x;
-				this.position.y  	= test.y - (this.getBounds().height/ 2) - 0.1;
+				this.position.y  	= test.y - Math.floor(this.height / 2);
+				console.log(this.position.y);
+				console.log(Math.floor(this.height / 2));
+				console.log(test.y);
+				console.log("");
 
 				this.velocity 		= new Vector(this.velocity.x, -1 * this.bounce * this.velocity.y);					
 				if(this.bounce == 0)
@@ -1255,10 +1546,14 @@ var tempCounter = 0;
 						this.rotation 			= 0;						
 					}
 				}
+				if(this === g.sprites["roller"])
+				{
+					g.oArrays.audios["gPomp"].audio.play();
+				}
 			}
 			else
 			{
-				this.position.y = test.y - (this.getBounds().height/ 2) - 0.1;
+				this.position.y = test.y - (this.height/ 2) - 0.1;
 			}
 		}	
 	}
